@@ -30,13 +30,13 @@ But you can use any C++11 compliant compiler that can build DLLs.
 
 
     function DoSomething()
-    local msg = comm.receive(); -- try to receive a message
-    if msg ~= nil then -- if there was one
-    print(msg); -- print it
-    end
+      local msg = comm.receive(); -- try to receive a message
+      if msg ~= nil then -- if there was one
+        print(msg); -- print it
+      end
 
 
-    comm.send("foobar"); -- send a message
+      comm.send("foobar"); -- send a message
     end
 ````
 
@@ -44,7 +44,7 @@ But you can use any C++11 compliant compiler that can build DLLs.
 
 (python_example.py)
 
-````python3
+````python
     import sys
 
     # we'll be using ctypes to handle the dll

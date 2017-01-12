@@ -14,6 +14,6 @@ Run `python3 interactiveConsole.py` and start typing some stuff.
 
 ## What it looks like
 
-![console](../images/console.png)
+![console](../../images/console.png)
 
-![game](../images/dota_lina.jpg)
+![game](../../images/dota_lina.jpg)

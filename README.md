@@ -93,7 +93,6 @@ If there is any interest in this project, I'll continue working on it. Otherwise
 ## TODO
 
 -   Do some proper testing
--   Provide a useful usecase (Live Api console in a bots context?)
 -   Create some more convenience functions
 -   Let the user specify the buffer size
 -   Add a way to connect to certain Lua modules only (Radiant and Dire are both connected at the moment)

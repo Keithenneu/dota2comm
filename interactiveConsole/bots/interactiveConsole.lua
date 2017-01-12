@@ -1,6 +1,6 @@
-module("console", package.seeall)
+module("interactiveConsole", package.seeall)
 
-setfenv(1, console);
+setfenv(1, interactiveConsole);
 
 require(GetScriptDirectory().."/dota2comm")
 
@@ -11,8 +11,22 @@ function makestring(o, f)
         return ""..o
     end
     if (type(o) == "string") then
-        return o
+        return "\""..o.."\""
     end
+    if (type(o) == "function") then
+        return "Function";
+    end
+    if (type(o) == "boolean") then
+        return "Function";
+    end
+    if (type(o) == "nil") then
+        return "null";
+    end
+    if (type(o) == "userdata") then
+        return "\"userdata\""
+    end
+    
+    -- vv Table vv
     
     res = "{"
     f[o] = true
@@ -21,22 +35,24 @@ function makestring(o, f)
     
         res = res .. ":"
     
-        if (type(o[n]) == "number") then
-            res = res .. o[n]
-        elseif (type(o[n]) == "string") then
-            res = res .. "\"" .. o[n] .. "\""
-        else
+        if (type(o[n]) == "table") then
             if (f[o[n]]) then
                 res = res .. "\"recursion detected\""
             else
-                res = res .. makestring(o[n])
+                res = res .. makestring(o[n], f)
             end
+        else
+            res = res .. makestring(o[n])
         end
     
         res = res .. ","
     end
     
-    return string.sub(res, 0,string.len(res)-1) .. "}"
+    if (string.len(res) > 2) then
+        res = string.sub(res, 0,string.len(res)-1)
+    end
+    
+    return res .. "}"
 end
 
 function execute()
@@ -46,11 +62,20 @@ function execute()
 		return; -- don't do anything
 	end
     
-    result = loadstring(msg)(); -- exceute it
+    local F = loadstring(msg) -- load function
     
-    result = makestring(result); -- convert to string
+    if (F == nil) then
+        comm.send("Syntax Error")
+        return
+    end
     
-    print(result)
+    local status, result = pcall(F); -- execute it
+    
+    if (status) then -- call succeeded
+        result = makestring(result); -- convert to string
+    else
+        result = "Error: " .. result; -- return the error
+    end
     
     comm.send(result); -- send the result
 end

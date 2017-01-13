@@ -25,6 +25,8 @@ Run `python3 interactiveConsole.py "path/to/your/bots/directory"` and start typi
 
 Make sure your dota console is open, if you want to see the responses.
 
+Exit with `exit` to make sure it exits gracefully
+
 ## What it looks like
 
 (Using the memory backend)

@@ -19,7 +19,7 @@ function init()
 	output[0] = "os000" -- buffer start
 	output[1] = "oe000" -- buffer end
 	for i = 1,10 do
-		output[2-1+i] = "o"..string.format("%03d", i-1)..blank -- buffer...
+		output[2-1+i] = ""
 	end
 	
 	local tbl = {};

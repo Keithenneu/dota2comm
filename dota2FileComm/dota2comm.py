@@ -1,41 +1,38 @@
 import os
-import sys
 
-path = "C:/Program Files (x86)/Steam/steamapps/common/dota 2 beta/game/dota/scripts/vscripts/bots"
+class Dota2Comm:
+    def __init__(self, path=None, **kwargs):
+        if path is None:
+            raise ValueError("No path to dota2 bot directory provided")
+            
+        self.__path = path
+            
+        if not os.path.exists(path + "/dota2comm/"):
+            os.makedirs(path + "/dota2comm")
+            
+        if os.path.exists(path + "/dota2comm/rev.lua"):
+            self.__rev = int(open(path + "/dota2comm/rev.lua", "r").read().split("=")[1])
+        else:
+            self.__rev = 0
+            
+    def __send(self, msg):
+        self.__rev = self.__rev + 1
+        messages = "messages = {\"%s\"}" % msg.replace("\\", "\\\\").replace("\"", "\\\"")
 
-if not os.path.exists(path + "/dota2comm/"):
-    os.makedirs(path + "/dota2comm")
-    
-if os.path.exists(path + "/dota2comm/rev.lua"):
-    rev = int(open(path + "/dota2comm/rev.lua", "r").read().split("=")[1])
-else:
-    rev = 0
+        f = open(self.__path + "/dota2comm/messages.lua", "w")
+        f.write(messages)
+        f.close()
 
-def send(msg, rev):
-    messages = "messages = {\"%s\"}" % msg.replace("\\", "\\\\").replace("\"", "\\\"")
+        f = open(self.__path + "/dota2comm/rev.lua", "w")
+        f.write("rev=" + str(self.__rev))
+        f.close()
 
-    f = open(path + "/dota2comm/messages.lua", "w")
-    f.write(messages)
-    f.close()
+    def receiveMessage(self):
+        return None
 
-    f = open(path + "/dota2comm/rev.lua", "w")
-    f.write("rev=" + str(rev))
-    f.close()
-    
-while True:
-    try:
-        print("> ", end="")
-        msg = input()
-        rev = rev + 1
+    def sendMessage(self, message):
+        self.__send(message)
+        return True
         
-        if msg == "exit":
-            send("", rev)
-            break
-        
-        send(msg, rev)
-        
-    except KeyboardInterrupt:
-        break
-        
-    except EOFError:
-        break
+    def exit(self):
+        self.__send("")

@@ -2,37 +2,18 @@ import sys
 from threading import Thread
 from time import sleep
 
-# we'll be using ctypes to handle the dll
-from ctypes import cdll, c_char_p
+from dota2comm import Dota2Comm
 
-# load the dll
-dota2comm = cdll.LoadLibrary("dota2comm.dll")
-
-# set some types
-receiveMessage = dota2comm.receiveMessage
-receiveMessage.restype = c_char_p
-
-sendMessage = dota2comm.sendMessage
-sendMessage.argtypes = [c_char_p]
-
-# initialize the dll and connect to lua
-err = dota2comm.init()
-if err != 0:
-	print("init failed! error code", err);
-	sys.exit()
-    
-# Print the number of connected Lua modules
-nroflients = dota2comm.getNrConnectedClients()
-
-if nroflients < 1:
-    print("No clients found. Is the game running?")
-    sys.exit()
+if len(sys.argv) == 2:
+    dota = Dota2Comm(path=sys.argv[1])
+else:
+    dota = Dota2Comm()
 
 def waitForAnswers():
     while running:
-        msg = receiveMessage()
+        msg = dota.receiveMessage()
         if msg is not None:
-            print("[Out] %s" % str(msg.decode()))
+            print("[Out] %s" % str(msg))
         sleep(0.05)
     
 running = True
@@ -45,10 +26,11 @@ while running:
         print("[In] ", end="")
         msg = input()
         if msg == "exit":
+            dota.exit()
             running = False
             thread.join()
         else:
-            sendMessage(msg.encode())
+            dota.sendMessage(msg)
         sleep(0.1)
     except:
         running = False

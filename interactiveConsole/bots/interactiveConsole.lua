@@ -17,7 +17,11 @@ function makestring(o, f)
         return "Function";
     end
     if (type(o) == "boolean") then
-        return "Function";
+        if (o) then
+            return "true"
+        else
+            return "false"
+        end
     end
     if (type(o) == "nil") then
         return "null";

@@ -1,18 +1,33 @@
-## Interactive Console
-This is a interactive Console, which can execute code in a bots Context.
-
-# __READ THE MAIN README FIRST!__
+# Interactive Console
+This is a interactive Console, which can execute code in a bots context.
 
 ## Usage
 
+First, decide on a communication backend. Read the respective README files for help, or the main README for an overview.
+
+#### Memory backend
+
 Put the the bots folder content in your dota installation's bot folder, together with the `dota2comm.lua` file.
-Put `interactiveConsole.py` somewhere, together with the compiled `dota2comm.dll`.
+Put `interactiveConsole.py` somewhere, together with `dota2comm.py` and the compiled `dota2comm.dll`.
 
 Start a lobby game with the bots.
 
 Run `python3 interactiveConsole.py` and start typing some stuff.
 
+#### File backend
+
+Put the the bots folder content in your dota installation's bot folder, together with the `dota2comm.lua` file.
+Put `interactiveConsole.py` somewhere, together with `dota2comm.py`.
+
+Start a lobby game with the bots.
+
+Run `python3 interactiveConsole.py "path/to/your/bots/directory"` and start typing some stuff.
+
+Make sure your dota console is open, if you want to see the responses.
+
 ## What it looks like
+
+(Using the memory backend)
 
 ![console](../../images/console.png)
 

@@ -225,8 +225,12 @@ DLLEXPORT int init()
 		phandle = 0;
 		return CANT_FIND_PROCESS;
 	}
-	else if (pid < 0)
-		return -pid;
+    /*
+    //DWORD can't be less than 0
+    else if (pid < 0)
+        return -pid;
+    */
+	
 		
 	// open it with some right
 	phandle = OpenProcess(PROCESS_VM_READ | PROCESS_VM_WRITE | PROCESS_QUERY_INFORMATION, 0, pid);

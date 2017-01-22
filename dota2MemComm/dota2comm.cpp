@@ -164,7 +164,7 @@ vector<Table> findTables(char* buffer, int size, int base)
 		{
 			// string length, according to lua
 			int length = *((int*) &buffer[sptr-base+12]);
-			if (length > 0 and length < 100)
+			if (length > 0 && length < 100)
 			{
 				// check if it's the expected string
 				if (!strncmp(&buffer[sptr-base+16], "commtable", length))

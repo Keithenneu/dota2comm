@@ -1,5 +1,7 @@
+#include <stdint.h>
+
+
 #define CANT_FIND_PROCESS 1
-#define GATHER_PROCESS_INFO_FAILED 2
 #define REGION_READ_FAILED 3
 #define INVALID_REGION_STATE 4
 #define UNKNOWN_BASE_ADDRESS 5
@@ -7,36 +9,27 @@
 
 #define DLLEXPORT extern "C" __declspec(dllexport)
 
+
 struct Cell
 {
-	int data;
-	int tt;
+	int32_t data;
+	int32_t tt;
 };
 
-/*
-struct MTable
-{
-void *garbage1, *garbage2;
-Cell *array;
-void *garbage3, *garbage4, *garbage5, *garbage6;
-int arraysize;
-};
-*/
 
-//int is always 32-bit 
-//pointers are 64-bit in MSVC x86
+//use guaranteed 32bit datatypes
 struct MTable
 {
-    int garbage1, garbage2;
-    int array;
-    int garbage3, garbage4, garbage5, garbage6;
-    int arraysize;
+    int32_t garbage1, garbage2;
+    int32_t array;
+    int32_t garbage3, garbage4, garbage5, garbage6;
+    int32_t arraysize;
 };
 
 
 struct Table
 {
-	int input_ptr, output_ptr;
+	int32_t input_ptr, output_ptr;
 };
 
 DLLEXPORT const char *receiveMessage();

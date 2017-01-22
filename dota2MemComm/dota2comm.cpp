@@ -28,7 +28,7 @@ DWORD FindProcessId(const char *processname)
     if (!Process32First(hProcessSnap, &pe32))
     {
         CloseHandle(hProcessSnap);          // clean the snapshot object
-        return -GATHER_PROCESS_INFO_FAILED;
+        return 0;
     }
 
     do
@@ -225,11 +225,6 @@ DLLEXPORT int init()
 		phandle = 0;
 		return CANT_FIND_PROCESS;
 	}
-    /*
-    //DWORD can't be less than 0
-    else if (pid < 0)
-        return -pid;
-    */
 	
 		
 	// open it with some right

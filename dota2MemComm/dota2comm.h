@@ -13,13 +13,26 @@ struct Cell
 	int tt;
 };
 
+/*
 struct MTable
 {
-	void *garbage1, *garbage2;
-	Cell *array;
-	void *garbage3, *garbage4, *garbage5, *garbage6;
-	int arraysize;
+void *garbage1, *garbage2;
+Cell *array;
+void *garbage3, *garbage4, *garbage5, *garbage6;
+int arraysize;
 };
+*/
+
+//int is always 32-bit 
+//pointers are 64-bit in MSVC x86
+struct MTable
+{
+    int garbage1, garbage2;
+    int array;
+    int garbage3, garbage4, garbage5, garbage6;
+    int arraysize;
+};
+
 
 struct Table
 {

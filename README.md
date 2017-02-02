@@ -27,3 +27,7 @@ If you
 -   Anything else
 
 just let me know. Open an issue, write a pm, or whatever you want.
+
+## Contributors
+
+Huge thanks to [lenLRX](https://github.com/lenLRX) for adding support for multiple bots and fixing a lot of stuff.

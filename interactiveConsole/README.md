@@ -21,7 +21,9 @@ Put `interactiveConsole.py` somewhere, together with `dota2comm.py`.
 
 Start a lobby game with the bots.
 
-Run `python3 interactiveConsole.py "path/to/your/bots/directory"` and start typing some stuff.
+Run `python3 interactiveConsole.py "name of your client"` and start typing some stuff.
+
+It'll ask for the path to your bot directory when starting up for the first time (there will be a file called `path.txt` afterwards).
 
 Make sure your dota console is open, if you want to see the responses.
 

@@ -32,3 +32,7 @@ Exit with `exit` to make sure it exits gracefully
 (Using the memory backend)
 
 ![game](../../images/dota2_comm_multi_bots.png)
+
+#### Things you can do in the console
+
+![console](../../images/console.png)

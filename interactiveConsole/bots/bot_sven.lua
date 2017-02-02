@@ -1,7 +1,7 @@
 local interactiveConsole = require(GetScriptDirectory().."/interactiveConsole")
 
-local linaConsole = interactiveConsole:new("linaConsole")
+local svenConsole = interactiveConsole:new("svenConsole")
 
 function Think()
-    linaConsole:execute()
+    svenConsole:execute()
 end

@@ -1,8 +1,5 @@
-module("interactiveConsole", package.seeall)
-
-setfenv(1, interactiveConsole);
-
-require(GetScriptDirectory().."/dota2comm")
+local interactiveConsole = {}
+local comm = require(GetScriptDirectory().."/dota2comm")
 
 function makestring(o, f)
     if (not f) then f={} end
@@ -59,8 +56,17 @@ function makestring(o, f)
     return res .. "}"
 end
 
-function execute()
-	local msg = comm.receive(); -- get a message
+function interactiveConsole:new(marker)
+    local o = {}
+    setmetatable(o, self)
+    self.__index = self
+    o.comm = comm:new(marker)
+    o.marker = marker
+    return o
+end
+
+function interactiveConsole:execute()
+	local msg = self.comm:receive(); -- get a message
     
     if msg == nil then -- if there wasn't one
 		return; -- don't do anything
@@ -69,7 +75,7 @@ function execute()
     local F = loadstring(msg) -- load function
     
     if (F == nil) then
-        comm.send("Syntax Error")
+        self.comm:send("Syntax Error")
         return
     end
     
@@ -81,5 +87,7 @@ function execute()
         result = "Error: " .. result; -- return the error
     end
     
-    comm.send(result); -- send the result
+    self.comm:send(result); -- send the result
 end
+
+return interactiveConsole

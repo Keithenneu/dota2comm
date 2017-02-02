@@ -12,7 +12,7 @@ Put `interactiveConsole.py` somewhere, together with `dota2comm.py` and the comp
 
 Start a lobby game with the bots.
 
-Run `python3 interactiveConsole.py` and start typing some stuff.
+Run `python3 interactiveConsole.py "name of your client"` and start typing some stuff.
 
 #### File backend
 
@@ -31,6 +31,4 @@ Exit with `exit` to make sure it exits gracefully
 
 (Using the memory backend)
 
-![console](../../images/console.png)
-
-![game](../../images/dota_lina.jpg)
+![game](../../images/dota2_comm_multi_bots.png)

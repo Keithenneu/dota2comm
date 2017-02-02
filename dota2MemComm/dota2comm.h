@@ -32,7 +32,8 @@ struct Table
 	int32_t input_ptr, output_ptr;
 };
 
-DLLEXPORT const char *receiveMessage();
-DLLEXPORT bool sendMessage(const char *text);
-DLLEXPORT int init();
-DLLEXPORT int getNrConnectedClients();
+DLLEXPORT const char *receiveMessage(const char *marker);
+DLLEXPORT bool sendMessage(const char *marker, const char *text);
+DLLEXPORT int init(const char *marker);
+DLLEXPORT int getNrConnectedClients(const char *marker);
+DLLEXPORT void freeString(const char *str);

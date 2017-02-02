@@ -3,12 +3,14 @@
 #include <fstream>
 #include <TlHelp32.h>
 #include <vector>
+#include <map>
+#include <string>
 
 #include "dota2comm.h"
 
 using namespace std;
 
-vector<Table> tables;
+map<string, vector<Table> > tables;
 HANDLE phandle;
 
 DWORD FindProcessId(const char *processname)
@@ -123,10 +125,13 @@ int readMemory(HANDLE phandle, char* buffer, int size, int base)
 }	
 
 // find tables created and marked by the lua module
-vector<Table> findTables(char* buffer, int size, int base)
+vector<Table> findTables(char* buffer, int size, int base, string marker)
 {
+    //double marker
+    string markermarker = marker + marker;
 	// find the marker
-	vector<int> commtables = findall(buffer, size, "commtablecommtable", strlen("commtablecommtable"));
+    const char* p_markermarker = markermarker.c_str();
+	vector<int> commtables = findall(buffer, size, p_markermarker, strlen(p_markermarker));
 	
 	vector<int> references;
 	
@@ -142,7 +147,7 @@ vector<Table> findTables(char* buffer, int size, int base)
 	}
 	
 	
-	vector<Table> tables;
+	vector<Table> vec_tables;
 	
 	// check if it was the key for a table
 	for(int r : references)
@@ -167,7 +172,7 @@ vector<Table> findTables(char* buffer, int size, int base)
 			if (length > 0 && length < 100)
 			{
 				// check if it's the expected string
-				if (!strncmp(&buffer[sptr-base+16], "commtable", length))
+				if (!strncmp(&buffer[sptr-base+16], marker.c_str(), length))
 				{
 					Table table;
 					int input_tbl = array[1].data;
@@ -176,17 +181,18 @@ vector<Table> findTables(char* buffer, int size, int base)
 					table.input_ptr = (int)btable->array;
 					btable = (MTable*)&buffer[output_tbl-base];
 					table.output_ptr = (int)btable->array;
-					tables.push_back(table);
+                    vec_tables.push_back(table);
+                    break;//there should not be more than one
 				}
 			}
 		}
 	}
 	
-	return tables;
+	return vec_tables;
 }
 
 // read a string from memory
-const char * getString(int array_ptr, int index, HANDLE phandle, int *length)
+char * getString(int array_ptr, int index, HANDLE phandle, int *length)
 {
 	int sptr;
 	ReadProcessMemory(phandle, (LPCVOID)(array_ptr+index*8), &sptr, 4, 0);
@@ -214,7 +220,7 @@ void writeString(int array_ptr, int index, HANDLE phandle, const char *buffer, i
 	WriteProcessMemory(phandle, (LPVOID)(sptr+16), buffer, length, 0);
 }
 
-DLLEXPORT int init()
+DLLEXPORT int init(const char *marker)
 {
     DWORD64 base = 0x10000;
 
@@ -240,12 +246,12 @@ DLLEXPORT int init()
 		int err = readMemory(phandle, buffer, size, base);
 		if (err != 0)
 		{
-			delete buffer;
+			delete[] buffer;
 			return err;
 		}
 		// use it to find our tables
-		tables = findTables(buffer, size, base);
-		delete buffer;
+		tables[marker] = findTables(buffer, size, base, marker);
+		delete[] buffer;
 	}
 	else
 	{
@@ -255,22 +261,34 @@ DLLEXPORT int init()
 	return 0;
 }
 
-DLLEXPORT int getNrConnectedClients()
+DLLEXPORT int getNrConnectedClients(const char *marker)
 {
-	return tables.size();
+    if (tables.count(marker))
+        return tables[marker].size();
+    else
+        return 0;
 }
 
-DLLEXPORT bool sendMessage(const char *text)
+DLLEXPORT bool sendMessage(const char *marker, const char *text)
 {
 	int length = strlen(text);
 	bool success = true;
+
+    char* c_ptr = nullptr;
 	
 	// write to each table
-	for (Table table : tables)
+	for (Table table : tables[marker])
 	{
 		// read ring buffer boundaries
-	    int b_start = atoi(getString(table.input_ptr, 0, phandle, 0)+2);
-		int b_end = atoi(getString(table.input_ptr, 1, phandle, 0)+2);
+
+        c_ptr = getString(table.input_ptr, 0, phandle, 0);
+	    int b_start = atoi(c_ptr + 2);
+        delete[] c_ptr;
+
+        c_ptr = getString(table.input_ptr, 1, phandle, 0);
+		int b_end = atoi(c_ptr + 2);
+        delete[] c_ptr;
+
 		if ((b_end+1)%10 == b_start)
 		{
 			success = false; // buffer is full
@@ -280,31 +298,44 @@ DLLEXPORT bool sendMessage(const char *text)
 		char *mbuf = new char[1+3+length+1];
 		snprintf(mbuf, 1+3+length+1, "i%03d%s", length, text);
 		writeString(table.input_ptr, b_end+2, phandle, mbuf, 1+3+length+1);
+        delete[] mbuf;
 		b_end = (b_end+1)%10;
 		char *sbuf = new char[2+3+1];
 		snprintf(sbuf, 2+3+1, "ie%03d", b_end);
 		writeString(table.input_ptr, 1, phandle, sbuf,2+3+1);
+        delete[] sbuf;
 	}
 	return success;
 }
 
-DLLEXPORT const char *receiveMessage()
+DLLEXPORT const char *receiveMessage(const char *marker)
 {
 	// read from all tables. first success gets returned
-	for (Table table : tables)
+    char* c_ptr = nullptr;
+	for (Table table : tables[marker])
 	{
 		// read ring buffer boundaries
-		int b_start = atoi(getString(table.output_ptr, 0, phandle, 0)+2);
-		int b_end = atoi(getString(table.output_ptr, 1, phandle, 0)+2);
+        c_ptr = getString(table.output_ptr, 0, phandle, 0);
+		int b_start = atoi(c_ptr + 2);
+        delete[] c_ptr;
+
+        c_ptr = getString(table.output_ptr, 1, phandle, 0);
+		int b_end = atoi(c_ptr + 2);
+        delete[] c_ptr;
+
 		if (b_start == b_end) 
 			continue; // buffer is empty
-		const char *msg = getString(table.output_ptr, b_start+2, phandle, 0);
+		char *msg = getString(table.output_ptr, b_start+2, phandle, 0);
 		b_start = (b_start+1)%10;
 		char *sbuf = new char[2+3+1];
 		snprintf(sbuf, 2+3+1, "os%03d", b_start);
 		writeString(table.output_ptr, 0, phandle, sbuf, strlen(sbuf));
+        delete[] sbuf;
 		return msg;	
 	}
 	return 0;
 }
 
+DLLEXPORT void freeString(const char *str) {
+    delete[] str;
+}

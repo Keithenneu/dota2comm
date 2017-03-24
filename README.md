@@ -10,7 +10,7 @@ This is some code I wrote to allow for communication between the Dota2 Bot Lua A
 
 # Backends
 
- | MemoryComm | FileComm
+X | MemoryComm | FileComm
 --- | --- | ---
 *Speed* | quite fast | rather slow (3-4ms for reading)
 *To Lua* | 1023byte per message (adjustable) | infinite
